@@ -1,8 +1,8 @@
-import parse
+import parse, segment
 from PIL import Image, ImageDraw
 import math, colorsys
 
-def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40):
+def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40, segs=[]):
     packets=p["packets"]
     im=Image.new("RGB", (w, h), (255, 255, 255))
     draw=ImageDraw.Draw(im)
@@ -60,14 +60,16 @@ def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40):
             cy=length*math.sin(lon)
             draw.line([xi, yi, xi+cx, yi+cy], (0, 0, 255), width=1)
 
-        # TODO: segmentation.
-        def dr(a, b, c, d):
-            x1, y1 = xy_to_img(a, b)
-            x2, y2 = xy_to_img(c, d)
-            draw.rectangle([x1, y1, x2, y2], outline=(0, 0, 0))
-        dr(1500, 3000, 4000, 13000)
-        dr(4300, 3700, 7500, 7200)
-        dr(4300, 9000, 7500, 12500)
+    # TODO: segmentation.
+    def dr(a, b, c, d, col=(0, 0, 0)):
+        x1, y1 = xy_to_img(a, b)
+        x2, y2 = xy_to_img(c, d)
+        draw.rectangle([x1, y1, x2, y2], outline=col)
+
+    print len(segs), "segs"
+    for seg in segs:
+        bbox=segment.bounding_box(seg)
+        dr(bbox[0], bbox[1], bbox[2], bbox[3])
 
     im.show()
 
