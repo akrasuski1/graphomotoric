@@ -2,7 +2,7 @@ import parse, segment
 from PIL import Image, ImageDraw
 import math, colorsys
 
-def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40, segs=[]):
+def draw(p, w=1500, h=1000, color_mode="strength", maxt=1e9, vec_len=40, segs=[]):
     packets=p["packets"]
     im=Image.new("RGB", (w, h), (255, 255, 255))
     draw=ImageDraw.Draw(im)
@@ -51,7 +51,7 @@ def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40, segs=[]):
                 color=get_color(v/maxv)
                 last_v=v;
 
-        draw.line([lxi, lyi, xi, yi], color, width=2)
+        draw.line([lxi, lyi, xi, yi], color, width=3)
         if vec_len and num%10==0:
             lat=lat/10./180*math.pi
             lon=lon/10./180*math.pi
@@ -70,6 +70,24 @@ def draw(p, w=1500, h=1000, color_mode="speed", maxt=1e9, vec_len=40, segs=[]):
     for seg in segs:
         bbox=segment.bounding_box(seg)
         dr(bbox[0], bbox[1], bbox[2], bbox[3])
+
+    expected={
+            "ZIGZAG":     (2500,  2000, 5000,  12300),
+            "CIRCLERIGHT":(5500,  3000, 8500,  7000),
+            "CIRCLELEFT": (5500,  8500, 8500,  12000),
+            "FIRSTLINE":  (9200,  2000, 10000, 13000),
+            "SECONDLINE": (10400, 2000, 11000, 13000),
+            "BROKENLINE": (11700, 2000, 12700, 13000),
+            "SPIRALOUT":  (13500, 2000, 18000, 6500),
+            "SPIRALIN":   (13500, 8200, 18000, 13000),
+    }
+    minx, miny, maxx, maxy = segment.bounding_box(packets)
+    print minx, miny
+    offx=minx-2850
+    offy=miny-1800
+    for e in expected:
+        e=expected[e]
+        #dr(e[0]+offx, e[1]+offy, e[2]+offx, e[3]+offy, (255, 0, 0))
 
     im.show()
 
