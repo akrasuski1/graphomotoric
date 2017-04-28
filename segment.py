@@ -44,6 +44,7 @@ def segmentate(packets, delta=250, minsamples=25):
                 groups.append([pack])
             last_packet=pack
     # The expected locations of the segments.
+    # Unused. Left for the future?
     expected={
             "ZIGZAG":     (2500,  2000, 4500,  12300),
             "CIRCLERIGHT":(6000,  3000, 8000,  7000),
