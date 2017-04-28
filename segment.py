@@ -61,29 +61,23 @@ def segmentate(packets, delta=250, minsamples=25):
     #for e in expected:
     #    bboxes[e]=expected[e]
     # Calculate which bounding boxes overlap.
-    #similarity={}
-    #for i in bboxes:
-    #    similarity[i]=i
-    #for i in bboxes:
-    #    for j in bboxes:
-    #        if bbox_overlap(bboxes[i], bboxes[j]):
-    #            if similarity[j].startswith("_"):
-    #                similarity[j]=similarity[i]
-    #            else:
-    #                similarity[i]=similarity[j]
+    similarity=range(len(bboxes))
+    for i in range(len(bboxes)):
+        for j in range(i+1, len(bboxes)):
+            if bbox_overlap(bboxes[i], bboxes[j]):
+                similarity[j]=similarity[i]
     # Merge those that overlap.
-    #result={}
-    #for i in bboxes:
-    #    if similarity[i] not in result:
-    #        result[similarity[i]]=[]
-    #    if i.startswith("_"):
-    #        for p in groups[int(i[1:])]:
-    #            result[similarity[i]].append(p)
+    result={}
+    for i in range(len(bboxes)):
+        if similarity[i] not in result:
+            result[similarity[i]]=[]
+        result[similarity[i]]+=groups[i]
     # Filter out very short segments.
     ret=[]
-    for g in groups:
-        if len(g)>minsamples:
-            ret.append(g)
+    for g in result:
+        r=result[g]
+        if len(r)>minsamples:
+            ret.append(r)
     return ret
 
 if __name__=="__main__":
